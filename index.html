@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joseph Lee — GRC, Privacy &amp; AI Governance</title>
+<meta name="description" content="Joseph Lee — GRC, Privacy, and AI Governance Program Manager. Case studies in AI risk management, compliance-as-code, and vendor risk automation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:        #ECEAE3;
+    --bg-panel:  #E2DFD5;
+    --bg-panel-2:#CFCABD;
+    --ink:       #1C2430;
+    --ink-dim:   #535C68;
+    --ink-faint: #7C8490;
+    --hairline:  #C9C4B7;
+    --hairline-soft: #D8D4C8;
+    --gold:      #6E2A2A;
+    --gold-dim:  rgba(110,42,42,0.12);
+    --status-pass:     #4F7A5E;
+    --status-pass-bg:  rgba(79,122,94,0.12);
+    --status-active:   #6E2A2A;
+    --status-active-bg:rgba(110,42,42,0.12);
+    --status-prog:     #7C8490;
+    --status-prog-bg:  rgba(124,132,144,0.12);
+
+    --serif: 'Newsreader', Georgia, serif;
+    --sans:  'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono:  'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+    --container: 1080px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:var(--container); margin:0 auto; padding:0 28px; }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:14px;
+    height:1px;
+    background:var(--gold);
+    display:inline-block;
+  }
+
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; margin:0; }
+  .hairline{ border-top:1px solid var(--hairline); }
+
+  /* ============ NAV ============ */
+  header.site-nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(236,234,227,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hairline);
+  }
+  .nav-inner{
+    max-width:var(--container); margin:0 auto; padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-mark{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.06em;
+    color:var(--ink); display:flex; align-items:center; gap:8px;
+  }
+  .nav-mark .dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); display:inline-block; }
+  .nav-links{ display:flex; gap:28px; align-items:center; }
+  .nav-links a{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--ink); transition:color .2s;
+  }
+  .nav-links a:hover, .nav-links a:focus-visible{ color:var(--gold); }
+  .nav-links a.cta{
+    color:var(--bg); background:var(--gold); padding:8px 14px; border-radius:2px;
+  }
+  .nav-links a.cta:hover{ background:#dbb766; color:var(--bg); }
+  .nav-toggle{ display:none; }
+
+  @media (max-width: 720px){
+    .nav-links{
+      position:fixed; top:53px; left:0; right:0; bottom:0;
+      background:var(--bg); flex-direction:column; align-items:flex-start;
+      padding:32px 28px; gap:24px; transform:translateX(100%);
+      transition:transform .25s ease; border-left:1px solid var(--hairline);
+    }
+    .nav-links.open{ transform:translateX(0); }
+    .nav-toggle{
+      display:block; background:none; border:1px solid var(--hairline);
+      color:var(--ink); width:38px; height:34px; border-radius:2px; cursor:pointer;
+      font-family:var(--mono);
+    }
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    padding:168px 0 96px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--hairline-soft) 1px, transparent 1px);
+    background-size: 100% 88px;
+    opacity:0.4;
+    mask-image:linear-gradient(to bottom, black, transparent 85%);
+    pointer-events:none;
+  }
+  .hero-inner{ position:relative; max-width:760px; }
+  .hero .eyebrow{ margin-bottom:22px; }
+  .hero h1{
+    font-size:clamp(40px, 6vw, 64px);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  .hero .role{
+    font-family:var(--sans); font-size:18px; color:var(--ink-dim);
+    margin-top:16px; max-width:560px;
+  }
+  .hero .role strong{ color:var(--ink); font-weight:500; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:32px; }
+  .chip{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.04em;
+    padding:7px 11px; border:1px solid var(--hairline); border-radius:2px;
+    color:var(--ink-dim); display:flex; align-items:center; gap:7px;
+  }
+  .chip .led{ width:6px; height:6px; border-radius:50%; background:var(--status-active); box-shadow:0 0 6px var(--status-active); }
+
+  .hero-ctas{ display:flex; gap:14px; margin-top:40px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:13px 22px; border-radius:2px; border:1px solid var(--hairline);
+    transition:all .2s; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{ background:var(--gold); color:var(--bg); border-color:var(--gold); }
+  .btn-primary:hover{ background:#dbb766; }
+  .btn-ghost{ color:var(--ink); }
+  .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
+
+  /* ============ SECTION SHELL ============ */
+  section{ padding:88px 0; }
+  .section-head{ margin-bottom:48px; }
+  .section-head h2{ font-size:32px; margin-top:14px; }
+  .section-head .sub{ color:var(--ink-dim); margin-top:10px; max-width:560px; font-size:15px; }
+
+  /* ============ ABOUT ============ */
+  blockquote.thesis{
+    font-family:var(--serif); font-style:italic; font-size:clamp(22px,3vw,30px);
+    line-height:1.4; color:var(--ink); border-left:2px solid var(--gold);
+    padding-left:28px; margin:0 0 28px;
+  }
+  .about-body{ color:var(--ink-dim); max-width:680px; font-size:15.5px; }
+  .about-body p{ margin:0 0 14px; }
+
+  /* ============ EXPERIENCE ============ */
+  .record{
+    display:grid; grid-template-columns:160px 1fr; gap:28px;
+    padding:26px 0; border-top:1px solid var(--hairline-soft);
+  }
+  .record:first-of-type{ border-top:1px solid var(--hairline); }
+  .record .when{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); padding-top:3px; }
+  .record .role-line{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .record h3{ font-size:19px; }
+  .record .org{ font-family:var(--mono); font-size:12px; color:var(--gold); letter-spacing:0.03em; }
+  .record p{ color:var(--ink-dim); font-size:14.5px; margin:10px 0 0; max-width:600px; }
+  @media (max-width:640px){
+    .record{ grid-template-columns:1fr; gap:6px; }
+  }
+
+  /* ============ CERTIFICATIONS ============ */
+  .cert-grid{ display:flex; flex-wrap:wrap; gap:12px; }
+  .cert{
+    border:1px solid var(--hairline); border-radius:2px; padding:16px 18px;
+    min-width:200px; flex:1 1 200px; transition:border-color .2s;
+  }
+  .cert:hover{ border-color:var(--gold); }
+  .cert .code{ font-family:var(--mono); font-size:13px; color:var(--gold); letter-spacing:0.03em; }
+  .cert .name{ font-size:13px; color:var(--ink-dim); margin-top:6px; }
+
+  /* ============ PROJECTS / RISK REGISTER ============ */
+  .register{
+    width:100%; border-collapse:collapse; font-size:14px;
+  }
+  .register thead th{
+    text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--ink-faint); padding:0 16px 14px;
+    border-bottom:1px solid var(--hairline);
+  }
+  .register tbody tr.row{
+    border-bottom:1px solid var(--hairline-soft); cursor:pointer; transition:background .15s;
+  }
+  .register tbody tr.row:hover{ background:var(--bg-panel); }
+  .register td{ padding:18px 16px; vertical-align:top; }
+  .register td.id{ font-family:var(--mono); color:var(--ink-faint); white-space:nowrap; }
+  .register td.title{ font-family:var(--serif); font-size:16px; color:var(--ink); }
+  .register td.framework{ font-family:var(--mono); font-size:12px; color:var(--ink-dim); white-space:nowrap; }
+  .status-pill{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    padding:4px 9px; border-radius:20px; display:inline-block; white-space:nowrap;
+  }
+  .status-pill.published{ color:var(--status-pass); background:var(--status-pass-bg); }
+  .status-pill.progress{ color:var(--status-active); background:var(--status-active-bg); }
+  .register td.link a{ font-family:var(--mono); font-size:12px; color:var(--ink-dim); border-bottom:1px solid var(--hairline); }
+  .register td.link a:hover{ color:var(--gold); border-color:var(--gold); }
+  .detail-row td{ padding:0 16px 22px; }
+  .detail-row.hidden{ display:none; }
+  .detail-row .detail-box{
+    background:var(--bg-panel); border-left:2px solid var(--gold);
+    padding:16px 20px; color:var(--ink-dim); font-size:14px; max-width:680px;
+  }
+  @media (max-width:720px){
+    .register thead{ display:none; }
+    .register td.framework{ display:none; }
+  }
+
+  /* ============ SKILLS / TAXONOMY ============ */
+  .taxonomy{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; }
+  .taxonomy .group .eyebrow{ margin-bottom:14px; font-size:10.5px; }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-family:var(--mono); font-size:12px; color:var(--ink-dim);
+    border:1px solid var(--hairline-soft); padding:6px 10px; border-radius:2px;
+  }
+  @media (max-width:760px){ .taxonomy{ grid-template-columns:1fr; gap:28px; } }
+
+  /* ============ CONTACT / FOOTER ============ */
+  footer{ border-top:1px solid var(--hairline); padding:56px 0 36px; }
+  .contact-row{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px; }
+  .contact-links{ display:flex; gap:22px; flex-wrap:wrap; }
+  .contact-links a{ font-family:var(--mono); font-size:13px; color:var(--ink-dim); transition:color .2s; }
+  .contact-links a:hover{ color:var(--gold); }
+  .doc-control{
+    font-family:var(--mono); font-size:11px; color:var(--ink-faint);
+    letter-spacing:0.04em; margin-top:40px; padding-top:20px; border-top:1px solid var(--hairline-soft);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  /* ============ SCROLL REVEAL ============ */
+  .reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:none; }
+
+  ::selection{ background:var(--gold-dim); color:var(--ink); }
+  :focus-visible{ outline:1px solid var(--gold); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-mark"><span class="dot"></span>J. LEE — GRC / PRIVACY</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">≡</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#experience">Experience</a>
+      <a href="#certifications">Certifications</a>
+      <a href="#projects">Case Studies</a>
+      <a href="#contact" class="cta">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="eyebrow">Compliance Program Management · Privacy · AI Governance</div>
+      <h1>Joseph Lee</h1>
+      <p class="role">
+        GRC &amp; Privacy Program Manager building <strong>compliance programs that hold up under audit and under product velocity</strong> —
+        currently leading a 14-person privacy &amp; compliance function on assignment at a FAANG-scale technology company.
+      </p>
+
+      <div class="chip-row">
+        <span class="chip"><span class="led"></span>CIPP/US</span>
+        <span class="chip"><span class="led"></span>CIPP/E</span>
+        <span class="chip"><span class="led"></span>AWS Cloud Practitioner</span>
+        <span class="chip"><span class="led"></span>OneTrust Certified</span>
+      </div>
+
+      <div class="hero-ctas">
+        <a href="#projects" class="btn btn-primary">View case studies →</a>
+        <a href="/resume.pdf" class="btn btn-ghost">Download résumé (PDF)</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / THESIS -->
+  <section id="about">
+    <div class="wrap reveal">
+      <blockquote class="thesis">
+        "Compliance is a business enabler — not a checkbox function."
+      </blockquote>
+      <div class="about-body">
+        <p>I build privacy and GRC programs from the ground up: governance structures that scale with engineering velocity rather than slow it down, control frameworks that map cleanly to actual system architecture, and risk registers that get used instead of filed away.</p>
+        <p>My background spans Big Four consulting (PwC), in-house Big Tech (Meta), boutique advisory (Aprio), media (Gannett / USA TODAY Network), and now a client-facing role at Venable embedded inside a FAANG-scale org. That range is the point — I've seen how compliance gets built when there's a blank slate, and how it gets retrofitted when there isn't.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <div class="eyebrow">Service Record</div>
+        <h2>Experience</h2>
+        <p class="sub">Roles in reverse-chronological order. Engagement scope and team size noted where applicable.</p>
+      </div>
+
+      <div class="record">
+        <div class="when">2024 — Present</div>
+        <div>
+          <div class="role-line">
+            <h3>GRC &amp; Privacy Program Manager</h3>
+            <span class="org">Venable LLP — Client Assignment</span>
+          </div>
+          <p>Embedded at a FAANG-scale technology company leading a team of 14 across privacy and compliance workstreams, owning program structure, control ownership, and cross-functional escalation paths.</p>
+        </div>
+      </div>
+
+      <div class="record">
+        <div class="when">[dates]</div>
+        <div>
+          <div class="role-line">
+            <h3>Privacy Legal Program Manager</h3>
+            <span class="org">Meta</span>
+          </div>
+          <p>Drove privacy program execution within Meta's Privacy Legal organization, translating legal and regulatory requirements into operational program requirements.</p>
+        </div>
+      </div>
+
+      <div class="record">
+        <div class="when">[dates]</div>
+        <div>
+          <div class="role-line">
+            <h3>Cybersecurity &amp; Privacy Consultant</h3>
+            <span class="org">PwC</span>
+          </div>
+          <p>Advised clients within PwC's Cybersecurity, Privacy &amp; Forensics practice on privacy program maturity, regulatory readiness, and control design.</p>
+        </div>
+      </div>
+
+      <div class="record">
+        <div class="when">[dates]</div>
+        <div>
+          <div class="role-line">
+            <h3>Cyber GRC &amp; Privacy Consultant</h3>
+            <span class="org">Aprio</span>
+          </div>
+          <p>Delivered GRC and privacy advisory engagements across cybersecurity risk assessments, control frameworks, and privacy compliance programs for mid-market clients.</p>
+        </div>
+      </div>
+
+      <div class="record">
+        <div class="when">[dates]</div>
+        <div>
+          <div class="role-line">
+            <h3>Senior Privacy Manager</h3>
+            <span class="org">Gannett / USA TODAY Network</span>
+          </div>
+          <p>Led enterprise privacy program management across one of the largest U.S. media organizations, covering regulatory compliance and cross-brand data governance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <div class="eyebrow">Active Credentials</div>
+        <h2>Certifications</h2>
+      </div>
+      <div class="cert-grid">
+        <div class="cert"><div class="code">CIPP/US</div><div class="name">Certified Information Privacy Professional — IAPP</div></div>
+        <div class="cert"><div class="code">CIPP/E</div><div class="name">Certified Information Privacy Professional, Europe — IAPP</div></div>
+        <div class="cert"><div class="code">AWS-CP</div><div class="name">AWS Certified Cloud Practitioner</div></div>
+        <div class="cert"><div class="code">OneTrust</div><div class="name">OneTrust Certified Professional</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS — RISK REGISTER -->
+  <section id="projects">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <div class="eyebrow">Engineering-Adjacent GRC</div>
+        <h2>Case Studies</h2>
+        <p class="sub">Selected work from my GRC engineering portfolio — built to show compliance-as-code thinking, not just policy writing. Click a row to expand. Full code on GitHub.</p>
+      </div>
+
+      <table class="register">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Project</th>
+            <th>Framework</th>
+            <th>Status</th>
+            <th>Artifact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row" data-target="d1">
+            <td class="id">PROJ-01</td>
+            <td class="title">AI Governance Risk Register</td>
+            <td class="framework">NIST AI RMF</td>
+            <td><span class="status-pill progress">Complete</span></td>
+            <td class="link"><a href="https://github.com/joe-lee10/ai-governance-risk-register" target="_blank" rel="noopener">GitHub ↗</a></td>
+          </tr>
+          <tr class="detail-row hidden" id="d1"><td colspan="5">
+            <div class="detail-box">A structured risk register for AI/ML systems mapped to the NIST AI RMF's Govern, Map, Measure, and Manage functions — designed to give engineering and product teams a usable register rather than a static compliance artifact, with risks tied to specific model lifecycle stages.</div>
+          </td></tr>
+
+          <tr class="row" data-target="d2">
+            <td class="id">PROJ-02</td>
+            <td class="title">Compliance-as-Code Pipeline (OSCAL)</td>
+            <td class="framework">OSCAL</td>
+            <td><span class="status-pill progress">In Progress</span></td>
+            <td class="link"><a href="https://github.com/[your-username]/oscal-compliance-pipeline" target="_blank" rel="noopener">GitHub ↗</a></td>
+          </tr>
+          <tr class="detail-row hidden" id="d2"><td colspan="5">
+            <div class="detail-box">A pipeline that represents controls, assessment plans, and assessment results as version-controlled OSCAL artifacts — treating control evidence the way engineering treats infrastructure: declarative, diffable, and reviewable in a pull request.</div>
+          </td></tr>
+
+          <tr class="row" data-target="d3">
+            <td class="id">PROJ-03</td>
+            <td class="title">Vendor Questionnaire Automation</td>
+            <td class="framework">Third-Party Risk</td>
+            <td><span class="status-pill progress">In Progress</span></td>
+            <td class="link"><a href="https://github.com/[your-username]/vendor-questionnaire-automation" target="_blank" rel="noopener">GitHub ↗</a></td>
+          </tr>
+          <tr class="detail-row hidden" id="d3"><td colspan="5">
+            <div class="detail-box">A tool that automates first-pass review of vendor security questionnaires — parsing responses against a standing control baseline and flagging gaps for human review, cutting the manual triage step out of early-stage vendor risk assessment.</div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SKILLS / TAXONOMY -->
+  <section id="skills">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <div class="eyebrow">Control Taxonomy</div>
+        <h2>Frameworks &amp; Tooling</h2>
+      </div>
+      <div class="taxonomy">
+        <div class="group">
+          <div class="eyebrow">Frameworks &amp; Standards</div>
+          <div class="tag-row">
+            <span class="tag">NIST AI RMF</span>
+            <span class="tag">ISO 27001</span>
+            <span class="tag">ISO 42001</span>
+            <span class="tag">SOC 2</span>
+            <span class="tag">OSCAL</span>
+          </div>
+        </div>
+        <div class="group">
+          <div class="eyebrow">Privacy &amp; Regulatory</div>
+          <div class="tag-row">
+            <span class="tag">GDPR</span>
+            <span class="tag">CCPA / CPRA</span>
+            <span class="tag">Cross-border Transfers</span>
+            <span class="tag">DPIAs</span>
+          </div>
+        </div>
+        <div class="group">
+          <div class="eyebrow">Tooling</div>
+          <div class="tag-row">
+            <span class="tag">OneTrust</span>
+            <span class="tag">AWS</span>
+            <span class="tag">Vendor Risk Platforms</span>
+            <span class="tag">Python</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <footer id="contact">
+    <div class="wrap">
+      <div class="contact-row reveal">
+        <div>
+          <div class="eyebrow">Get in touch</div>
+          <h2 style="font-size:26px; margin-top:14px;">Open to GRC, privacy, and AI governance roles.</h2>
+        </div>
+        <div class="contact-links">
+          <a href="mailto:jkl24941@gmail.com">jkl24941@gmail.com</a>
+          <a href="https://www.linkedin.com/in/joelee19/" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="https://github.com/joe-lee10" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+      </div>
+      <div class="doc-control">
+        <span>DOCUMENT CONTROL — v1.0 · Classification: Public</span>
+        <span>Last reviewed: June 2026</span>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  // mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  navLinks?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  // expandable risk register rows
+  document.querySelectorAll('.register tr.row').forEach(row => {
+    row.addEventListener('click', () => {
+      const target = document.getElementById(row.dataset.target);
+      target?.classList.toggle('hidden');
+    });
+  });
+
+  // scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => io.observe(el));
+  } else {
+    reveals.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>
