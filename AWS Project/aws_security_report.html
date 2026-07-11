@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AWS Security Audit Report — 2026-07-10</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ECEAE3;--panel:#E2DFD5;--ink:#1C2430;--ink-dim:#535C68;--ink-faint:#7C8490;
+    --hairline:#C9C4B7;--accent:#6E2A2A;--accent-dim:rgba(110,42,42,0.1);
+    --critical:#7A1C1C;--critical-bg:rgba(122,28,28,0.10);
+    --high:#8A4A1A;--high-bg:rgba(138,74,26,0.10);
+    --medium:#7A6A1A;--medium-bg:rgba(122,106,26,0.10);
+    --low:#4A6A3A;--low-bg:rgba(74,106,58,0.10);
+    --pass:#3A6A5A;--pass-bg:rgba(58,106,90,0.10);
+    --sans:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;--serif:'Newsreader',Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+  .page-header{background:var(--ink);color:var(--bg);padding:32px 44px;}
+  .page-header .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(236,234,227,0.5);margin-bottom:8px;}
+  .page-header h1{font-family:var(--serif);font-size:28px;font-weight:500;margin:0 0 6px;}
+  .page-header .meta{font-family:var(--mono);font-size:12px;color:rgba(236,234,227,0.6);}
+
+  .stat-bar{display:flex;border-bottom:1px solid var(--hairline);}
+  .stat{flex:1;padding:22px 28px;border-right:1px solid var(--hairline);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:var(--serif);font-size:34px;line-height:1;}
+  .stat .label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px;}
+  .stat.crit .num{color:var(--critical);}
+  .stat.high .num{color:var(--high);}
+  .stat.pass-s .num{color:var(--pass);}
+
+  .sev-bar{display:flex;gap:0;border-bottom:1px solid var(--hairline);}
+  .sev-seg{padding:10px 20px;font-family:var(--mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;border-right:1px solid var(--hairline);}
+  .sev-seg.c{color:var(--critical);background:var(--critical-bg);}
+  .sev-seg.h{color:var(--high);background:var(--high-bg);}
+  .sev-seg.m{color:var(--medium);background:var(--medium-bg);}
+  .sev-seg.l{color:var(--low);background:var(--low-bg);}
+  .sev-seg.p{color:var(--pass);background:var(--pass-bg);}
+
+  .content{padding:36px 44px;overflow-x:auto;}
+  .section-head{margin-bottom:18px;}
+  .section-head h2{font-family:var(--serif);font-size:22px;font-weight:500;margin:0 0 4px;}
+  .section-head p{color:var(--ink-dim);font-size:13px;margin:0;}
+
+  .critical-box{background:var(--critical-bg);border:1px solid rgba(122,28,28,0.25);border-radius:2px;padding:24px 28px;margin-bottom:40px;}
+  .critical-box h2{font-family:var(--serif);font-size:20px;color:var(--critical);margin:0 0 16px;font-weight:500;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:48px;}
+  thead th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);padding:0 12px 12px;border-bottom:2px solid var(--hairline);white-space:nowrap;}
+  tbody tr{border-bottom:1px solid var(--hairline);transition:background .1s;}
+  tbody tr:hover{background:var(--panel);}
+  td{padding:13px 12px;vertical-align:top;}
+  td.mod{font-family:var(--mono);font-size:11px;white-space:nowrap;color:var(--ink-dim);}
+  td.resource{font-family:var(--mono);font-size:11px;color:var(--ink-dim);max-width:160px;word-break:break-all;}
+  td.finding-text{font-weight:500;max-width:200px;}
+  td.detail-text{color:var(--ink-dim);max-width:260px;font-size:12.5px;}
+  td.rec-text{color:var(--ink-dim);max-width:220px;font-size:12.5px;}
+
+  .badge{font-family:var(--mono);font-size:10px;letter-spacing:0.04em;text-transform:uppercase;padding:4px 8px;border-radius:20px;white-space:nowrap;}
+  .sev-critical{color:var(--critical);background:var(--critical-bg);}
+  .sev-high{color:var(--high);background:var(--high-bg);}
+  .sev-medium{color:var(--medium);background:var(--medium-bg);}
+  .sev-low{color:var(--low);background:var(--low-bg);}
+  .sev-pass{color:var(--pass);background:var(--pass-bg);}
+
+  .report-footer{border-top:1px solid var(--hairline);padding:20px 44px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">AWS Security Audit — Sample Data</div>
+  <h1>AWS Security Suite Report</h1>
+  <div class="meta">Generated: 2026-07-10 &nbsp;·&nbsp; Modules: IAM · S3 · CloudTrail &nbsp;·&nbsp; Note: Built on sample data for portfolio demonstration</div>
+</div>
+
+<div class="stat-bar">
+  <div class="stat"><div class="num">63</div><div class="label">Total Findings</div></div>
+  <div class="stat crit"><div class="num">7</div><div class="label">Critical</div></div>
+  <div class="stat high"><div class="num">21</div><div class="label">High</div></div>
+  <div class="stat"><div class="num">22</div><div class="label">Medium</div></div>
+  <div class="stat"><div class="num">7</div><div class="label">Low</div></div>
+  <div class="stat pass-s"><div class="num">6</div><div class="label">Pass</div></div>
+</div>
+
+<div class="sev-bar">
+  <div class="sev-seg c">Critical: 7</div>
+  <div class="sev-seg h">High: 21</div>
+  <div class="sev-seg m">Medium: 22</div>
+  <div class="sev-seg l">Low: 7</div>
+  <div class="sev-seg p">Pass: 6</div>
+</div>
+
+<div class="content">
+
+  
+  <div class="critical-box">
+    <h2>⚠ Critical Findings (7)</h2>
+    <table>
+      <thead><tr><th>Module</th><th>Resource</th><th>Finding</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">prod-admin-role</td>
+          <td class="finding-text">Wildcard actions and resources — equivalent to AdministratorAccess</td>
+          <td class="rec-text">Scope permissions to specific actions and resources required for the role's function.</td>
+        </tr>
+        <tr>
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">root-account</td>
+          <td class="finding-text">Root account has been used recently</td>
+          <td class="rec-text">Disable root access keys, enable MFA on root account, use IAM roles for all administrative tasks.</td>
+        </tr>
+        <tr>
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">intern-dev-role</td>
+          <td class="finding-text">IAMFullAccess assigned to intern account</td>
+          <td class="rec-text">Remove IAMFullAccess immediately. Grant read-only IAM permissions only if required.</td>
+        </tr>
+        <tr>
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">power-user</td>
+          <td class="finding-text">Wildcard actions and resources — equivalent to AdministratorAccess</td>
+          <td class="rec-text">Scope permissions to specific actions and resources required for the role's function.</td>
+        </tr>
+        <tr>
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-001 / root</td>
+          <td class="finding-text">Root account activity detected</td>
+          <td class="rec-text">Remove root access keys, enable MFA on root, use IAM roles for all administrative tasks. Alert on all future root activity.</td>
+        </tr>
+        <tr>
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-007 / AWS::CloudTrail::Trail/prod-trail</td>
+          <td class="finding-text">CloudTrail tampering — DeleteTrail</td>
+          <td class="rec-text">Restore CloudTrail logging immediately. Enable CloudTrail log file integrity validation and alert on all StopLogging/DeleteTrail events.</td>
+        </tr>
+        <tr>
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-010 / AWS::CloudTrail::Trail/dev-trail</td>
+          <td class="finding-text">CloudTrail tampering — StopLogging</td>
+          <td class="rec-text">Restore CloudTrail logging immediately. Enable CloudTrail log file integrity validation and alert on all StopLogging/DeleteTrail events.</td>
+        </tr></tbody>
+    </table>
+  </div>
+  
+
+  <div class="section-head">
+    <h2>All Findings</h2>
+    <p>Sorted by severity. IAM, S3, and CloudTrail findings consolidated into a single view.</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Module</th><th>Resource</th><th>Severity</th><th>Finding</th><th>Detail</th><th>Recommendation</th></tr>
+    </thead>
+    <tbody>
+        <tr class="sev-row-critical">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">prod-admin-role</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">Wildcard actions and resources — equivalent to AdministratorAccess</td>
+          <td class="detail-text">Role grants * on * — effectively full administrative access. Assigned to: iam-user:jsmith.</td>
+          <td class="rec-text">Scope permissions to specific actions and resources required for the role's function.</td>
+        </tr>
+        <tr class="sev-row-critical">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">root-account</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">Root account has been used recently</td>
+          <td class="detail-text">Root account activity detected. Root usage should be restricted to break-glass scenarios only. Enable MFA on root and remove all root access keys.</td>
+          <td class="rec-text">Disable root access keys, enable MFA on root account, use IAM roles for all administrative tasks.</td>
+        </tr>
+        <tr class="sev-row-critical">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">intern-dev-role</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">IAMFullAccess assigned to intern account</td>
+          <td class="detail-text">IAM full access on an intern account allows privilege escalation to any permission level.</td>
+          <td class="rec-text">Remove IAMFullAccess immediately. Grant read-only IAM permissions only if required.</td>
+        </tr>
+        <tr class="sev-row-critical">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">power-user</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">Wildcard actions and resources — equivalent to AdministratorAccess</td>
+          <td class="detail-text">Role grants * on * — effectively full administrative access. Assigned to: iam-user:dev-lead.</td>
+          <td class="rec-text">Scope permissions to specific actions and resources required for the role's function.</td>
+        </tr>
+        <tr class="sev-row-critical">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-001 / root</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">Root account activity detected</td>
+          <td class="detail-text">Root account logged in or performed API actions at 2026-06-01T08:12:33Z from 203.0.113.42. Root usage should be restricted to break-glass scenarios only.</td>
+          <td class="rec-text">Remove root access keys, enable MFA on root, use IAM roles for all administrative tasks. Alert on all future root activity.</td>
+        </tr>
+        <tr class="sev-row-critical">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-007 / AWS::CloudTrail::Trail/prod-trail</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">CloudTrail tampering — DeleteTrail</td>
+          <td class="detail-text">iam-user:intern01 performed DeleteTrail at 2026-06-01T10:45:33Z. Disabling audit logging is a common attacker tactic to cover tracks.</td>
+          <td class="rec-text">Restore CloudTrail logging immediately. Enable CloudTrail log file integrity validation and alert on all StopLogging/DeleteTrail events.</td>
+        </tr>
+        <tr class="sev-row-critical">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-010 / AWS::CloudTrail::Trail/dev-trail</td>
+          <td><span class="badge sev-critical">Critical</span></td>
+          <td class="finding-text">CloudTrail tampering — StopLogging</td>
+          <td class="detail-text">iam-user:dev-lead performed StopLogging at 2026-06-01T12:18:27Z. Disabling audit logging is a common attacker tactic to cover tracks.</td>
+          <td class="rec-text">Restore CloudTrail logging immediately. Enable CloudTrail log file integrity validation and alert on all StopLogging/DeleteTrail events.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">prod-admin-role</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:jsmith does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">dev-s3-full-role</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:dev-team does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">billing-reader</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:finance-team does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">cloudtrail-admin</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:security-team does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">data-scientist-role</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:ml-team does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">intern-dev-role</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:intern01 does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">ci-cd-deploy-role</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:ci-cd-pipeline does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">readonly-auditor</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:external-auditor does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">network-admin</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:netops does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">support-role</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:helpdesk does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">power-user</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">No MFA condition on IAM user role</td>
+          <td class="detail-text">Role assigned to iam-user:dev-lead does not enforce MFA authentication as a condition.</td>
+          <td class="rec-text">Add a condition requiring MFA (aws:MultiFactorAuthPresent: true) for all human IAM users.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">dev-test-scratch</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Public access not blocked</td>
+          <td class="detail-text">Block Public Access is not enabled. Bucket policy or ACLs may expose data publicly.</td>
+          <td class="rec-text">Enable all four S3 Block Public Access settings unless the bucket is intentionally serving public content.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">third-party-uploads</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Public access not blocked</td>
+          <td class="detail-text">Block Public Access is not enabled. Bucket policy or ACLs may expose data publicly.</td>
+          <td class="rec-text">Enable all four S3 Block Public Access settings unless the bucket is intentionally serving public content.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">data-lake-raw</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Server-side encryption not configured on sensitive data bucket</td>
+          <td class="detail-text">Bucket contains sensitive data but has no SSE configured (current: None).</td>
+          <td class="rec-text">Enable SSE-S3 (AES256) at minimum. Consider SSE-KMS for sensitive data to enable key management and audit trails.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">temp-data-transfer</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Public access not blocked</td>
+          <td class="detail-text">Block Public Access is not enabled. Bucket policy or ACLs may expose data publicly.</td>
+          <td class="rec-text">Enable all four S3 Block Public Access settings unless the bucket is intentionally serving public content.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-002 / AWS::IAM::User/jsmith</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Privilege escalation API call without MFA — CreateAccessKey</td>
+          <td class="detail-text">root called CreateAccessKey without MFA at 2026-06-01T08:15:01Z. Target resource: AWS::IAM::User/jsmith.</td>
+          <td class="rec-text">Require MFA for all IAM modification actions. Review the policy change for legitimacy.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-003 / iam-user:jsmith</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Brute force indicator — 3 consecutive failed logins</td>
+          <td class="detail-text">3 failed login attempts for iam-user:jsmith from 198.51.100.14. Possible credential stuffing or brute force attack.</td>
+          <td class="rec-text">Lock account, investigate source IP, enable GuardDuty for automated threat detection.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-006 / AWS::S3::Bucket/dev-test-scratch</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">S3 bucket ACL changed to public</td>
+          <td class="detail-text">iam-user:dev-lead changed bucket ACL to public-read on AWS::S3::Bucket/dev-test-scratch at 2026-06-01T10:22:09Z.</td>
+          <td class="rec-text">Revert bucket ACL. Enable S3 Block Public Access at account level to prevent future public ACL grants.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-012 / AWS::SecretsManager::Secret/prod-db-password</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Secrets Manager access without MFA</td>
+          <td class="detail-text">iam-user:intern01 accessed secret AWS::SecretsManager::Secret/prod-db-password at 2026-06-01T13:15:44Z without MFA authentication.</td>
+          <td class="rec-text">Require MFA for access to production secrets. Review intern access to production Secrets Manager.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-013 / AWS::EC2::SecurityGroup/sg-prod</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">Security group opened to 0.0.0.0/0</td>
+          <td class="detail-text">iam-user:netops opened port access to the public internet on AWS::EC2::SecurityGroup/sg-prod at 2026-06-01T14:02:19Z.</td>
+          <td class="rec-text">Restrict security group ingress to known CIDR ranges. Use VPN or bastion hosts for SSH/RDP access.</td>
+        </tr>
+        <tr class="sev-row-high">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-019 / AWS::IAM::User/intern01</td>
+          <td><span class="badge sev-high">High</span></td>
+          <td class="finding-text">MFA device disabled</td>
+          <td class="detail-text">iam-user:jsmith disabled MFA for AWS::IAM::User/intern01 at 2026-06-01T17:30:00Z.</td>
+          <td class="rec-text">Verify this action was authorized. Re-enable MFA immediately if not. Alert on all MFA disable events.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">dev-s3-full-role</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Wildcard resource scope</td>
+          <td class="detail-text">Policy actions apply to all resources (*). Attached policies: AmazonS3FullAccess.</td>
+          <td class="rec-text">Scope resource ARNs to specific buckets, instances, or prefixes where possible.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">data-scientist-role</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Wildcard resource scope</td>
+          <td class="detail-text">Policy actions apply to all resources (*). Attached policies: AmazonS3FullAccess,AmazonAthenaFullAccess,AmazonSageMakerFullAccess.</td>
+          <td class="rec-text">Scope resource ARNs to specific buckets, instances, or prefixes where possible.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">intern-dev-role</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Wildcard resource scope</td>
+          <td class="detail-text">Policy actions apply to all resources (*). Attached policies: AmazonEC2FullAccess,IAMFullAccess.</td>
+          <td class="rec-text">Scope resource ARNs to specific buckets, instances, or prefixes where possible.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">ci-cd-deploy-role</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Wildcard resource scope</td>
+          <td class="detail-text">Policy actions apply to all resources (*). Attached policies: AmazonEC2FullAccess,AmazonS3FullAccess,AWSCloudFormationFullAccess.</td>
+          <td class="rec-text">Scope resource ARNs to specific buckets, instances, or prefixes where possible.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🔑 IAM</td>
+          <td class="resource">network-admin</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Wildcard resource scope</td>
+          <td class="detail-text">Policy actions apply to all resources (*). Attached policies: AmazonVPCFullAccess,AmazonRoute53FullAccess.</td>
+          <td class="rec-text">Scope resource ARNs to specific buckets, instances, or prefixes where possible.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">prod-customer-data</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">dev-test-scratch</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Server-side encryption not configured</td>
+          <td class="detail-text">No SSE configured on bucket 'dev-test-scratch'.</td>
+          <td class="rec-text">Enable SSE-S3 as a baseline. Consider a bucket policy that denies uploads without encryption.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">dev-test-scratch</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Access logging not enabled</td>
+          <td class="detail-text">S3 server access logging is disabled. No audit trail for access to 'dev-test-scratch'.</td>
+          <td class="rec-text">Enable S3 server access logging and route logs to a dedicated audit log bucket.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">finance-reports</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">ml-training-data</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Versioning not enabled on sensitive data bucket</td>
+          <td class="detail-text">Versioning protects against accidental deletion and ransomware. Not enabled on this sensitive data bucket.</td>
+          <td class="rec-text">Enable versioning and consider Object Lock for compliance data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">ml-training-data</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">static-website-assets</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Server-side encryption not configured</td>
+          <td class="detail-text">No SSE configured on bucket 'static-website-assets'.</td>
+          <td class="rec-text">Enable SSE-S3 as a baseline. Consider a bucket policy that denies uploads without encryption.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">backup-snapshots</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Access logging not enabled</td>
+          <td class="detail-text">S3 server access logging is disabled. No audit trail for access to 'backup-snapshots'.</td>
+          <td class="rec-text">Enable S3 server access logging and route logs to a dedicated audit log bucket.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">backup-snapshots</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">employee-hr-records</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">third-party-uploads</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Access logging not enabled</td>
+          <td class="detail-text">S3 server access logging is disabled. No audit trail for access to 'third-party-uploads'.</td>
+          <td class="rec-text">Enable S3 server access logging and route logs to a dedicated audit log bucket.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">data-lake-raw</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">shared-assets</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Access logging not enabled</td>
+          <td class="detail-text">S3 server access logging is disabled. No audit trail for access to 'shared-assets'.</td>
+          <td class="rec-text">Enable S3 server access logging and route logs to a dedicated audit log bucket.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">temp-data-transfer</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Server-side encryption not configured</td>
+          <td class="detail-text">No SSE configured on bucket 'temp-data-transfer'.</td>
+          <td class="rec-text">Enable SSE-S3 as a baseline. Consider a bucket policy that denies uploads without encryption.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">temp-data-transfer</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Access logging not enabled</td>
+          <td class="detail-text">S3 server access logging is disabled. No audit trail for access to 'temp-data-transfer'.</td>
+          <td class="rec-text">Enable S3 server access logging and route logs to a dedicated audit log bucket.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">analytics-output</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">Versioning not enabled on sensitive data bucket</td>
+          <td class="detail-text">Versioning protects against accidental deletion and ransomware. Not enabled on this sensitive data bucket.</td>
+          <td class="rec-text">Enable versioning and consider Object Lock for compliance data.</td>
+        </tr>
+        <tr class="sev-row-medium">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">analytics-output</td>
+          <td><span class="badge sev-medium">Medium</span></td>
+          <td class="finding-text">MFA delete not enabled on sensitive data bucket</td>
+          <td class="detail-text">MFA delete prevents permanent object deletion without a second factor. Recommended for sensitive or regulated data.</td>
+          <td class="rec-text">Enable MFA delete on buckets containing sensitive, financial, or regulated data.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">dev-test-scratch</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Versioning not enabled</td>
+          <td class="detail-text">Versioning is disabled on 'dev-test-scratch'.</td>
+          <td class="rec-text">Enable versioning to protect against accidental overwrites and deletions.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">static-website-assets</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Versioning not enabled</td>
+          <td class="detail-text">Versioning is disabled on 'static-website-assets'.</td>
+          <td class="rec-text">Enable versioning to protect against accidental overwrites and deletions.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">third-party-uploads</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Versioning not enabled</td>
+          <td class="detail-text">Versioning is disabled on 'third-party-uploads'.</td>
+          <td class="rec-text">Enable versioning to protect against accidental overwrites and deletions.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">shared-assets</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Versioning not enabled</td>
+          <td class="detail-text">Versioning is disabled on 'shared-assets'.</td>
+          <td class="rec-text">Enable versioning to protect against accidental overwrites and deletions.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">temp-data-transfer</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Versioning not enabled</td>
+          <td class="detail-text">Versioning is disabled on 'temp-data-transfer'.</td>
+          <td class="rec-text">Enable versioning to protect against accidental overwrites and deletions.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">temp-data-transfer</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Temporary/scratch bucket aged 60 days</td>
+          <td class="detail-text">Bucket 'temp-data-transfer' appears to be a temporary bucket that hasn't been modified in 60 days.</td>
+          <td class="rec-text">Review bucket contents. Delete if no longer needed to reduce attack surface.</td>
+        </tr>
+        <tr class="sev-row-low">
+          <td class="mod">📋 CloudTrail</td>
+          <td class="resource">EVT-016 / iam-user:external-auditor</td>
+          <td><span class="badge sev-low">Low</span></td>
+          <td class="finding-text">Console login from external IP</td>
+          <td class="detail-text">iam-user:external-auditor logged in from external IP 185.220.101.5 at 2026-06-01T16:01:55Z. Verify this is an expected access pattern.</td>
+          <td class="rec-text">Confirm with the user that this login is legitimate. Consider IP allowlisting for privileged accounts.</td>
+        </tr>
+        <tr class="sev-row-pass">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">prod-customer-data</td>
+          <td><span class="badge sev-pass">Pass</span></td>
+          <td class="finding-text">Core security controls in place</td>
+          <td class="detail-text">Public access blocked, encryption enabled, versioning on, logging active.</td>
+          <td class="rec-text">Review MFA delete status for sensitive data buckets.</td>
+        </tr>
+        <tr class="sev-row-pass">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">finance-reports</td>
+          <td><span class="badge sev-pass">Pass</span></td>
+          <td class="finding-text">Core security controls in place</td>
+          <td class="detail-text">Public access blocked, encryption enabled, versioning on, logging active.</td>
+          <td class="rec-text">Review MFA delete status for sensitive data buckets.</td>
+        </tr>
+        <tr class="sev-row-pass">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">audit-logs-archive</td>
+          <td><span class="badge sev-pass">Pass</span></td>
+          <td class="finding-text">Core security controls in place</td>
+          <td class="detail-text">Public access blocked, encryption enabled, versioning on, logging active.</td>
+          <td class="rec-text">Review MFA delete status for sensitive data buckets.</td>
+        </tr>
+        <tr class="sev-row-pass">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">employee-hr-records</td>
+          <td><span class="badge sev-pass">Pass</span></td>
+          <td class="finding-text">Core security controls in place</td>
+          <td class="detail-text">Public access blocked, encryption enabled, versioning on, logging active.</td>
+          <td class="rec-text">Review MFA delete status for sensitive data buckets.</td>
+        </tr>
+        <tr class="sev-row-pass">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">compliance-evidence</td>
+          <td><span class="badge sev-pass">Pass</span></td>
+          <td class="finding-text">Core security controls in place</td>
+          <td class="detail-text">Public access blocked, encryption enabled, versioning on, logging active.</td>
+          <td class="rec-text">Review MFA delete status for sensitive data buckets.</td>
+        </tr>
+        <tr class="sev-row-pass">
+          <td class="mod">🗄 S3</td>
+          <td class="resource">prod-application-logs</td>
+          <td><span class="badge sev-pass">Pass</span></td>
+          <td class="finding-text">Core security controls in place</td>
+          <td class="detail-text">Public access blocked, encryption enabled, versioning on, logging active.</td>
+          <td class="rec-text">Review MFA delete status for sensitive data buckets.</td>
+        </tr></tbody>
+  </table>
+
+</div>
+
+<div class="report-footer">
+  <span>DOCUMENT CONTROL — Classification: Confidential · Sample data only — not a real AWS environment</span>
+  <span>Generated by aws_security_suite.py · 2026-07-10</span>
+</div>
+
+</body>
+</html>

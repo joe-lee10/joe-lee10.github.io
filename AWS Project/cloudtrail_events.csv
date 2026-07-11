@@ -1,0 +1,21 @@
+event_id,timestamp,event_name,event_source,user_identity,source_ip,region,error_code,resources_affected,mfa_authenticated,notes
+EVT-001,2026-06-01T08:12:33Z,ConsoleLogin,signin.amazonaws.com,root,203.0.113.42,us-east-1,,AWS::IAM::Root,False,Root account console login — critical
+EVT-002,2026-06-01T08:15:01Z,CreateAccessKey,iam.amazonaws.com,root,203.0.113.42,us-east-1,,AWS::IAM::User/jsmith,False,Root created access key for IAM user
+EVT-003,2026-06-01T09:03:17Z,ConsoleLogin,signin.amazonaws.com,iam-user:jsmith,198.51.100.14,us-east-1,Failed authentication,,False,Failed login — possible credential stuffing
+EVT-004,2026-06-01T09:03:45Z,ConsoleLogin,signin.amazonaws.com,iam-user:jsmith,198.51.100.14,us-east-1,Failed authentication,,False,Repeated failed login from same IP
+EVT-005,2026-06-01T09:04:02Z,ConsoleLogin,signin.amazonaws.com,iam-user:jsmith,198.51.100.14,us-east-1,Failed authentication,,False,Third consecutive failed login — brute force indicator
+EVT-006,2026-06-01T10:22:09Z,PutBucketAcl,s3.amazonaws.com,iam-user:dev-lead,10.0.1.55,us-east-1,,AWS::S3::Bucket/dev-test-scratch,True,S3 bucket ACL changed to public-read
+EVT-007,2026-06-01T10:45:33Z,DeleteTrail,cloudtrail.amazonaws.com,iam-user:intern01,10.0.1.88,us-east-1,,AWS::CloudTrail::Trail/prod-trail,False,CloudTrail trail deletion attempted — no MFA
+EVT-008,2026-06-01T11:02:44Z,CreateUser,iam.amazonaws.com,iam-user:jsmith,10.0.1.55,us-east-1,,AWS::IAM::User/new-svc-account,True,New IAM user created
+EVT-009,2026-06-01T11:05:12Z,AttachUserPolicy,iam.amazonaws.com,iam-user:jsmith,10.0.1.55,us-east-1,,AWS::IAM::User/new-svc-account,True,AdministratorAccess attached to new user
+EVT-010,2026-06-01T12:18:27Z,StopLogging,cloudtrail.amazonaws.com,iam-user:dev-lead,10.0.1.55,us-east-1,,AWS::CloudTrail::Trail/dev-trail,True,CloudTrail logging stopped in dev account
+EVT-011,2026-06-01T13:00:01Z,ConsoleLogin,signin.amazonaws.com,iam-user:finance-team,10.0.2.10,us-east-1,,AWS::IAM::User/finance-team,True,Normal login with MFA — clean
+EVT-012,2026-06-01T13:15:44Z,GetSecretValue,secretsmanager.amazonaws.com,iam-user:intern01,10.0.1.88,us-east-1,,AWS::SecretsManager::Secret/prod-db-password,False,Intern accessed production secrets — no MFA
+EVT-013,2026-06-01T14:02:19Z,AuthorizeSecurityGroupIngress,ec2.amazonaws.com,iam-user:netops,10.0.1.12,us-east-1,,AWS::EC2::SecurityGroup/sg-prod,True,Security group opened port 22 to 0.0.0.0/0
+EVT-014,2026-06-01T14:45:00Z,DeleteBucket,s3.amazonaws.com,iam-user:dev-lead,10.0.1.55,us-east-1,,AWS::S3::Bucket/old-backups,True,S3 bucket deleted
+EVT-015,2026-06-01T15:30:22Z,CreateVpc,ec2.amazonaws.com,iam-user:netops,10.0.1.12,us-east-1,,AWS::EC2::VPC/vpc-new,True,New VPC created — routine network change
+EVT-016,2026-06-01T16:01:55Z,ConsoleLogin,signin.amazonaws.com,iam-user:external-auditor,185.220.101.5,us-east-1,,AWS::IAM::User/external-auditor,True,External auditor login from unusual IP — verify
+EVT-017,2026-06-01T16:45:12Z,UpdateAssumeRolePolicy,iam.amazonaws.com,iam-user:jsmith,10.0.1.55,us-east-1,,AWS::IAM::Role/prod-admin-role,True,Trust policy updated on admin role
+EVT-018,2026-06-01T17:02:38Z,PutBucketPolicy,s3.amazonaws.com,iam-user:dev-lead,10.0.1.55,us-east-1,,AWS::S3::Bucket/employee-hr-records,True,Bucket policy changed on HR records bucket
+EVT-019,2026-06-01T17:30:00Z,DisableMFADevice,iam.amazonaws.com,iam-user:jsmith,10.0.1.55,us-east-1,,AWS::IAM::User/intern01,True,MFA device disabled for intern account
+EVT-020,2026-06-02T08:00:01Z,ConsoleLogin,signin.amazonaws.com,iam-user:security-team,10.0.3.1,us-east-1,,AWS::IAM::User/security-team,True,Normal security team login with MFA — clean

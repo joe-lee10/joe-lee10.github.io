@@ -1,0 +1,16 @@
+role_name,role_type,attached_policies,inline_policy_actions,has_mfa_condition,allows_wildcard_actions,allows_wildcard_resources,assigned_to,last_used_days_ago,notes
+prod-admin-role,Role,AdministratorAccess,,False,True,True,iam-user:jsmith,2,Full admin access with wildcard on actions and resources
+dev-s3-full-role,Role,AmazonS3FullAccess,,False,False,True,iam-user:dev-team,5,S3 full access with wildcard resource scope
+billing-reader,Role,Billing,,False,False,False,iam-user:finance-team,1,Read-only billing access — appropriate scope
+cloudtrail-admin,Role,AWSCloudTrailFullAccess,,False,False,False,iam-user:security-team,3,CloudTrail admin — acceptable for security team
+lambda-exec-role,Role,AWSLambdaBasicExecutionRole,,False,False,False,lambda:data-processor,1,Lambda execution role — appropriate
+ec2-ssm-role,Role,AmazonSSMManagedInstanceCore,,False,False,False,ec2:web-servers,1,SSM access for EC2 — appropriate
+data-scientist-role,Role,"AmazonS3FullAccess,AmazonAthenaFullAccess,AmazonSageMakerFullAccess",,False,False,True,iam-user:ml-team,4,Broad ML permissions — review resource scoping
+root-account,,,,False,True,True,root,0,Root account used recently — critical finding
+intern-dev-role,Role,"AmazonEC2FullAccess,IAMFullAccess",,False,False,True,iam-user:intern01,7,Intern with EC2 and IAM full access — excessive
+backup-role,Role,AWSBackupFullAccess,,False,False,False,aws-backup,2,Backup service role — appropriate
+ci-cd-deploy-role,Role,"AmazonEC2FullAccess,AmazonS3FullAccess,AWSCloudFormationFullAccess",,False,False,True,iam-user:ci-cd-pipeline,1,CI/CD role — broad but common; review resource scoping
+readonly-auditor,Role,SecurityAudit,,False,False,False,iam-user:external-auditor,10,Read-only auditor — appropriate
+network-admin,Role,"AmazonVPCFullAccess,AmazonRoute53FullAccess",,False,False,True,iam-user:netops,3,Network admin with wildcard resources
+support-role,Role,AWSSupportAccess,,False,False,False,iam-user:helpdesk,5,Support access — appropriate
+power-user,Role,PowerUserAccess,,False,True,True,iam-user:dev-lead,1,Power user with broad permissions — review necessity

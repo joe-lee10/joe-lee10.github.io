@@ -1,0 +1,16 @@
+bucket_name,region,public_access_blocked,server_side_encryption,versioning_enabled,logging_enabled,mfa_delete,lifecycle_policy,bucket_policy_allows_public,contains_sensitive_data,last_modified_days_ago,notes
+prod-customer-data,us-east-1,True,AES256,True,True,False,True,False,True,1,Customer PII — good posture except MFA delete not enabled
+dev-test-scratch,us-west-2,False,None,False,False,False,False,True,False,14,Dev scratch bucket — public access not blocked and no encryption
+finance-reports,us-east-1,True,AES256,True,True,False,True,False,True,3,Finance data — solid posture; MFA delete recommended
+ml-training-data,us-east-1,True,AES256,False,True,False,True,False,True,2,ML training data — versioning not enabled
+static-website-assets,us-east-1,False,None,False,True,False,False,True,False,5,Static website — intentionally public; confirm no sensitive data
+audit-logs-archive,us-east-1,True,AES256,True,True,True,True,False,True,1,Audit log archive — strong posture
+backup-snapshots,us-west-2,True,AES256,True,False,False,True,False,True,7,Backup bucket — logging not enabled
+employee-hr-records,us-east-1,True,AES256,True,True,False,True,False,True,2,HR records — MFA delete strongly recommended for sensitive data
+third-party-uploads,us-east-1,False,AES256,False,False,False,False,True,False,4,Third-party upload bucket — public access not blocked
+data-lake-raw,us-east-1,True,None,True,True,False,True,False,True,1,Data lake — encryption not configured
+shared-assets,us-west-2,True,AES256,False,False,False,False,False,False,30,Shared assets — versioning and logging not enabled
+compliance-evidence,us-east-1,True,AES256,True,True,True,True,False,True,2,Compliance evidence store — strong posture
+temp-data-transfer,us-east-1,False,None,False,False,False,False,True,False,60,Temp transfer bucket — multiple findings; aged 60 days
+prod-application-logs,us-east-1,True,AES256,True,True,False,True,False,False,1,App logs — good posture
+analytics-output,us-east-1,True,AES256,False,True,False,True,False,True,3,Analytics output — versioning not enabled
