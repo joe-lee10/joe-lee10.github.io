@@ -1,0 +1,49 @@
+evidence_id,control_id,evidence_date,evidence_type,evidence_description,evidence_source,reviewer,result
+EV-001,CC-001,2025-07-15,Documentation,Annual board security review minutes reviewed and approved security charter,Board minutes,J. Lee,Effective
+EV-002,CC-002,2025-07-20,Documentation,Org chart and RACI reviewed — all security roles documented,HR / CISO,J. Lee,Effective
+EV-003,CC-003,2025-08-01,Documentation,Policy acknowledgment records reviewed — 98% completion rate,LMS export,J. Lee,Effective
+EV-004,CC-003,2026-02-01,Documentation,Annual policy re-acknowledgment — 96% completion at time of review,LMS export,J. Lee,Effective
+EV-005,CC-004,2025-08-10,Documentation,Security objectives communication log and all-hands security briefing records reviewed,Communications archive,J. Lee,Effective
+EV-006,CC-005,2025-09-01,Documentation,Annual risk assessment completed and approved by Risk Committee,Risk register v3.1,J. Lee,Effective
+EV-007,CC-006,2025-07-01,Documentation,Q3 risk register review — 12 risks reviewed 2 elevated,Risk Committee minutes,J. Lee,Effective
+EV-008,CC-006,2025-10-01,Documentation,Q4 risk register review completed,Risk Committee minutes,J. Lee,Effective
+EV-009,CC-006,2026-01-05,Documentation,Q1 risk register review completed,Risk Committee minutes,J. Lee,Effective
+EV-010,CC-006,2026-04-01,Documentation,Q2 risk register review completed,Risk Committee minutes,J. Lee,Effective
+EV-011,CC-007,2025-07-01,System Screenshot,Monitoring dashboard screenshot showing uptime and alert configuration,Datadog / PagerDuty,J. Lee,Effective
+EV-012,CC-007,2025-10-01,System Screenshot,Q4 monitoring report reviewed — 3 alerts triggered and resolved,Monitoring platform,J. Lee,Effective
+EV-013,CC-007,2026-01-15,System Screenshot,Q1 monitoring report reviewed,Monitoring platform,J. Lee,Effective
+EV-014,CC-008,2025-08-15,Documentation,Control design documentation reviewed and approved,Security Engineering,J. Lee,Effective
+EV-015,CC-009,2025-07-01,System Screenshot,MFA enforcement confirmed across all production systems via Okta admin console,Okta admin,J. Lee,Effective
+EV-016,CC-009,2026-01-10,System Screenshot,MFA enforcement re-verified — 2 service accounts identified without MFA,Okta admin,J. Lee,Exception
+EV-017,CC-010,2025-08-01,Ticket,Sample of 10 provisioning tickets reviewed — all had manager approval,JIRA export,J. Lee,Effective
+EV-018,CC-010,2025-11-01,Ticket,Sample of 5 termination tickets reviewed — 4 deprovisioned same day 1 delayed 3 days,JIRA export,J. Lee,Exception
+EV-019,CC-011,2025-08-15,Documentation,Q3 access review report reviewed — 847 accounts reviewed 23 access rights removed,IAM review report,J. Lee,Effective
+EV-020,CC-011,2025-11-15,Documentation,Q4 access review report reviewed,IAM review report,J. Lee,Effective
+EV-021,CC-011,2026-02-15,Documentation,Q1 access review completed,IAM review report,J. Lee,Effective
+EV-022,CC-011,2026-05-15,Documentation,Q2 access review completed,IAM review report,J. Lee,Effective
+EV-023,CC-012,2025-07-01,System Screenshot,Firewall rules and VPN configuration reviewed — all external access requires VPN + MFA,Network config export,J. Lee,Effective
+EV-024,CC-012,2026-01-10,System Screenshot,Firewall rule review — one legacy rule found allowing broad inbound access,Network config export,J. Lee,Exception
+EV-025,CC-013,2025-07-01,Report,Weekly vulnerability scan reports reviewed for sample of 12 weeks — all scans completed on schedule,Qualys export,J. Lee,Effective
+EV-026,CC-013,2026-01-01,Report,Weekly vulnerability scan reports reviewed for Q1 — 2 critical vulnerabilities identified,Qualys export,J. Lee,Effective
+EV-027,CC-014,2025-09-15,Documentation,Incident log reviewed — 4 incidents logged in audit period all closed within SLA,Incident tracker,J. Lee,Effective
+EV-028,CC-015,2025-08-01,Documentation,IRP document v3.2 reviewed and dated within audit period,IRP document,J. Lee,Effective
+EV-029,CC-015,2025-10-15,Documentation,Annual tabletop exercise conducted — cross-functional participation confirmed,Tabletop summary,J. Lee,Effective
+EV-030,CC-016,2025-09-15,Documentation,Post-incident review records reviewed for 2 incidents — recovery procedures followed,Post-incident reports,J. Lee,Effective
+EV-031,CC-017,2025-08-01,Ticket,Sample of 15 change tickets reviewed — all had testing sign-off and CAB approval,JIRA export,J. Lee,Effective
+EV-032,CC-017,2026-01-15,Ticket,Sample of 10 change tickets reviewed — 1 emergency change lacked documented rollback plan,JIRA export,J. Lee,Exception
+EV-033,CC-018,2025-09-01,Documentation,Vendor risk assessments reviewed for top 10 vendors — all completed within 12 months,Vendor risk log,J. Lee,Effective
+EV-034,CC-018,2026-03-01,Documentation,Annual vendor reassessments reviewed — 2 vendors overdue by 30+ days,Vendor risk log,J. Lee,Exception
+EV-035,A-001,2025-07-01,Report,Uptime report reviewed — 99.97% availability achieved against 99.9% SLA,SLA dashboard,J. Lee,Effective
+EV-036,A-001,2026-01-01,Report,Q1 uptime report — 99.94% availability achieved,SLA dashboard,J. Lee,Effective
+EV-037,A-002,2025-09-01,Documentation,Incident post-mortems reviewed — root cause and remediation documented for all P1 incidents,Post-mortem log,J. Lee,Effective
+EV-038,A-003,2025-08-15,Report,Backup logs reviewed for 3-month sample — all backups completed successfully,Backup system log,J. Lee,Effective
+EV-039,A-003,2025-11-15,Report,Recovery test conducted — RTO of 3.5 hours achieved against 4-hour target,DR test report,J. Lee,Effective
+EV-040,A-003,2026-02-15,Report,Backup logs reviewed Q1 — one backup failure detected and re-run within 2 hours,Backup system log,J. Lee,Effective
+EV-041,C-001,2025-08-01,Documentation,Data classification policy reviewed and current — data inventory reviewed for completeness,Privacy / Legal,J. Lee,Effective
+EV-042,C-002,2025-07-01,System Screenshot,Encryption at rest confirmed via AWS KMS configuration review,AWS KMS console,J. Lee,Effective
+EV-043,C-002,2026-01-10,System Screenshot,TLS configuration reviewed — all endpoints confirmed TLS 1.2 or higher,Network scan output,J. Lee,Effective
+EV-044,C-003,2025-08-15,System Screenshot,Data access control lists reviewed — confidential data access restricted to named roles,IAM / DLP console,J. Lee,Effective
+EV-045,C-003,2026-01-15,System Screenshot,Access to confidential data re-reviewed — one overly broad role identified,IAM console,J. Lee,Exception
+EV-046,C-004,2025-10-01,Documentation,Data disposal records reviewed for decommissioned systems — certificates of destruction on file,IT / Privacy,J. Lee,Effective
+EV-047,C-005,2025-08-01,Documentation,NDA log reviewed — all active employees and contractors have signed NDAs,Legal / HR,J. Lee,Effective
+EV-048,C-005,2026-01-10,Documentation,Third-party NDA log reviewed — 1 vendor missing current NDA,Legal,J. Lee,Exception
