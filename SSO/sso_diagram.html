@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAML 2.0 SSO Flow — Interactive Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #ECEAE3;
+    --panel:     #E2DFD5;
+    --panel-2:   #D8D4C8;
+    --ink:       #1C2430;
+    --ink-dim:   #535C68;
+    --ink-faint: #7C8490;
+    --hairline:  #C9C4B7;
+    --accent:    #6E2A2A;
+    --accent-dim:rgba(110,42,42,0.10);
+    --gold:      #8A6A2A;
+    --gold-dim:  rgba(138,106,42,0.12);
+    --green:     #3A6A5A;
+    --green-dim: rgba(58,106,90,0.12);
+    --blue:      #2A4A7A;
+    --blue-dim:  rgba(42,74,122,0.10);
+    --sans:      'IBM Plex Sans', sans-serif;
+    --mono:      'IBM Plex Mono', monospace;
+    --serif:     'Newsreader', Georgia, serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+  /* ── Header ── */
+  .page-header { background: var(--ink); color: var(--bg); padding: 28px 40px; }
+  .page-header .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,227,0.5); margin-bottom: 8px; }
+  .page-header h1 { font-family: var(--serif); font-size: 26px; font-weight: 500; margin-bottom: 4px; }
+  .page-header .sub { font-size: 13px; color: rgba(236,234,227,0.6); font-family: var(--mono); }
+
+  /* ── Layout ── */
+  .app { display: grid; grid-template-columns: 1fr 340px; gap: 0; min-height: calc(100vh - 98px); }
+  .diagram-area { padding: 32px 32px 32px 40px; border-right: 1px solid var(--hairline); overflow: hidden; }
+  .info-panel { padding: 28px; background: var(--panel); display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Actors ── */
+  .actors { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 0; }
+  .actor { text-align: center; }
+  .actor-box {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+    background: var(--bg); border: 1.5px solid var(--hairline); border-radius: 4px;
+    padding: 14px 18px; min-width: 120px;
+  }
+  .actor-box .actor-icon { font-size: 28px; line-height: 1; }
+  .actor-box .actor-name { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: 0.03em; }
+  .actor-box .actor-sub { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); }
+  .actor-box.active-actor { border-color: var(--accent); background: var(--accent-dim); }
+
+  /* ── Lifelines ── */
+  .flow-area { position: relative; margin-top: 0; }
+  .lifelines {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .lifeline-col { display: flex; justify-content: center; }
+  .lifeline { width: 1.5px; background: var(--hairline); height: 100%; }
+
+  /* ── Steps SVG ── */
+  #flow-svg { width: 100%; display: block; }
+
+  /* ── Controls ── */
+  .controls { display: flex; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .btn-ctrl {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 10px 18px; border-radius: 2px; border: 1px solid var(--hairline); background: var(--bg);
+    color: var(--ink); cursor: pointer; transition: all .15s;
+  }
+  .btn-ctrl:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-ctrl.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .btn-ctrl.primary:hover { background: #8A3535; }
+  .step-counter { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-left: auto; }
+  .progress-bar { height: 3px; background: var(--hairline); border-radius: 2px; overflow: hidden; margin-top: 12px; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s ease; }
+
+  /* ── Info panel ── */
+  .step-badge { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+  .step-badge::before { content: ""; width: 12px; height: 1px; background: var(--accent); }
+  .step-title { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--ink); margin-top: 6px; }
+  .step-desc { font-size: 13.5px; color: var(--ink-dim); line-height: 1.65; margin-top: 8px; }
+  .step-tech { background: var(--ink); color: var(--bg); border-radius: 2px; padding: 12px 14px; margin-top: 12px; }
+  .step-tech .tech-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(236,234,227,0.5); margin-bottom: 6px; }
+  .step-tech .tech-value { font-family: var(--mono); font-size: 12px; color: rgba(236,234,227,0.9); line-height: 1.6; }
+  .security-note { border-left: 2px solid var(--accent); padding: 10px 14px; background: var(--accent-dim); border-radius: 0 2px 2px 0; margin-top: 12px; }
+  .security-note .sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .security-note .sec-text { font-size: 12.5px; color: var(--ink-dim); line-height: 1.5; }
+
+  .legend { border-top: 1px solid var(--hairline); padding-top: 16px; margin-top: auto; }
+  .legend-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+  .legend-items { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--ink-dim); }
+  .legend-line { width: 28px; height: 2px; flex-shrink: 0; }
+  .legend-line.req { background: var(--accent); }
+  .legend-line.resp { background: var(--green); }
+  .legend-line.redir { background: var(--gold); border-top: 2px dashed var(--gold); background: none; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .info-panel { border-top: 1px solid var(--hairline); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">Enterprise Identity · SAML 2.0</div>
+  <h1>SAML 2.0 SP-Initiated SSO Flow</h1>
+  <div class="sub">Step through the authentication flow — click Next or press → to advance</div>
+</div>
+
+<div class="app">
+  <div class="diagram-area">
+
+    <div class="actors" id="actors">
+      <div class="actor">
+        <div class="actor-box" id="actor-browser">
+          <div class="actor-icon">🖥</div>
+          <div class="actor-name">Browser</div>
+          <div class="actor-sub">End User</div>
+        </div>
+      </div>
+      <div class="actor">
+        <div class="actor-box" id="actor-sp">
+          <div class="actor-icon">⚙️</div>
+          <div class="actor-name">Service Provider</div>
+          <div class="actor-sub">e.g. Salesforce, Okta App</div>
+        </div>
+      </div>
+      <div class="actor">
+        <div class="actor-box" id="actor-idp">
+          <div class="actor-icon">🔑</div>
+          <div class="actor-name">Identity Provider</div>
+          <div class="actor-sub">e.g. Okta, Azure AD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-area">
+      <div class="lifelines">
+        <div class="lifeline-col"><div class="lifeline"></div></div>
+        <div class="lifeline-col"><div class="lifeline"></div></div>
+        <div class="lifeline-col"><div class="lifeline"></div></div>
+      </div>
+      <svg id="flow-svg" viewBox="0 0 640 520" xmlns="http://www.w3.org/2000/svg">
+        <!-- defs -->
+        <defs>
+          <marker id="arrow-req" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#6E2A2A"/>
+          </marker>
+          <marker id="arrow-resp" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3A6A5A"/>
+          </marker>
+          <marker id="arrow-redir" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#8A6A2A"/>
+          </marker>
+        </defs>
+
+        <!-- Step lines — all hidden initially, shown by JS -->
+        <!-- Row Y positions: 50, 110, 170, 230, 290, 350, 410, 470 -->
+
+        <!-- Step 1: Browser → SP (access attempt) -->
+        <g id="step-1" opacity="0">
+          <line x1="107" y1="50" x2="320" y2="50" stroke="#6E2A2A" stroke-width="2" marker-end="url(#arrow-req)"/>
+          <rect x="150" y="32" width="130" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="215" y="45" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="11" fill="#1C2430">GET /dashboard</text>
+          <circle cx="107" cy="50" r="4" fill="#6E2A2A"/>
+        </g>
+
+        <!-- Step 2: SP → SP (check session) -->
+        <g id="step-2" opacity="0">
+          <path d="M 370,110 C 420,110 420,140 370,140" stroke="#8A6A2A" stroke-width="2" fill="none" stroke-dasharray="4,3"/>
+          <rect x="380" y="118" width="110" height="16" fill="#ECEAE3" rx="2"/>
+          <text x="435" y="130" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#535C68">no session found</text>
+        </g>
+
+        <!-- Step 3: SP generates AuthnRequest -->
+        <g id="step-3" opacity="0">
+          <rect x="300" y="158" width="160" height="28" fill="#E2DFD5" rx="2" stroke="#C9C4B7" stroke-width="1"/>
+          <text x="380" y="170" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#1C2430">Generate AuthnRequest</text>
+          <text x="380" y="181" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="9" fill="#535C68">(XML, signed with SP key)</text>
+        </g>
+
+        <!-- Step 4: SP → Browser (302 redirect to IdP) -->
+        <g id="step-4" opacity="0">
+          <line x1="320" y1="230" x2="107" y2="230" stroke="#8A6A2A" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrow-redir)"/>
+          <rect x="140" y="212" width="150" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="215" y="226" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#8A6A2A">302 → IdP SSO URL</text>
+          <circle cx="320" cy="230" r="4" fill="#8A6A2A"/>
+        </g>
+
+        <!-- Step 5: Browser → IdP (forward AuthnRequest) -->
+        <g id="step-5" opacity="0">
+          <line x1="107" y1="290" x2="530" y2="290" stroke="#6E2A2A" stroke-width="2" marker-end="url(#arrow-req)"/>
+          <rect x="250" y="272" width="160" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="330" y="285" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#1C2430">GET /sso?SAMLRequest=…</text>
+          <circle cx="107" cy="290" r="4" fill="#6E2A2A"/>
+        </g>
+
+        <!-- Step 6: IdP → Browser (login form) -->
+        <g id="step-6" opacity="0">
+          <line x1="530" y1="350" x2="107" y2="350" stroke="#3A6A5A" stroke-width="2" marker-end="url(#arrow-resp)"/>
+          <rect x="240" y="332" width="160" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="320" y="345" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#3A6A5A">200 Login form (MFA)</text>
+          <circle cx="530" cy="350" r="4" fill="#3A6A5A"/>
+        </g>
+
+        <!-- Step 7: User authenticates + IdP validates -->
+        <g id="step-7" opacity="0">
+          <line x1="107" y1="410" x2="530" y2="410" stroke="#6E2A2A" stroke-width="2" marker-end="url(#arrow-req)"/>
+          <rect x="220" y="392" width="200" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="320" y="406" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#1C2430">POST credentials + MFA token</text>
+          <circle cx="107" cy="410" r="4" fill="#6E2A2A"/>
+          <!-- IdP validates -->
+          <path d="M 580,410 C 620,410 620,430 580,430" stroke="#8A6A2A" stroke-width="2" fill="none" stroke-dasharray="4,3"/>
+          <text x="590" y="445" text-anchor="start" font-family="'IBM Plex Mono'" font-size="9" fill="#535C68">Validate + sign</text>
+          <text x="590" y="456" text-anchor="start" font-family="'IBM Plex Mono'" font-size="9" fill="#535C68">SAML Assertion</text>
+        </g>
+
+        <!-- Step 8: IdP → Browser (HTML auto-submit form with SAMLResponse) -->
+        <g id="step-8" opacity="0">
+          <line x1="530" y1="470" x2="107" y2="470" stroke="#3A6A5A" stroke-width="2" marker-end="url(#arrow-resp)"/>
+          <rect x="175" y="452" width="220" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="285" y="465" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#3A6A5A">HTML form (SAMLResponse auto-POST)</text>
+          <circle cx="530" cy="470" r="4" fill="#3A6A5A"/>
+        </g>
+
+        <!-- Step 9 line — browser to SP with SAMLResponse, shown at step 9 -->
+        <!-- We extend the SVG for step 9 and 10 -->
+      </svg>
+
+      <!-- Steps 9–10 shown in a second SVG segment when needed -->
+      <svg id="flow-svg-2" viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg" style="display:none;margin-top:-4px;">
+        <defs>
+          <marker id="arrow-req2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#6E2A2A"/>
+          </marker>
+          <marker id="arrow-resp2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3A6A5A"/>
+          </marker>
+        </defs>
+
+        <!-- Step 9: Browser → SP POST SAMLResponse to ACS URL -->
+        <g id="step-9" opacity="0">
+          <line x1="107" y1="50" x2="320" y2="50" stroke="#6E2A2A" stroke-width="2" marker-end="url(#arrow-req2)"/>
+          <rect x="130" y="32" width="185" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="222" y="45" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#1C2430">POST /acs (SAMLResponse)</text>
+          <circle cx="107" cy="50" r="4" fill="#6E2A2A"/>
+        </g>
+
+        <!-- Step 10: SP validates, creates session, 302 to resource -->
+        <g id="step-10" opacity="0">
+          <line x1="320" y1="110" x2="107" y2="110" stroke="#3A6A5A" stroke-width="2" marker-end="url(#arrow-resp2)"/>
+          <rect x="120" y="92" width="190" height="20" fill="#ECEAE3" rx="2"/>
+          <text x="215" y="106" text-anchor="middle" font-family="'IBM Plex Mono'" font-size="10" fill="#3A6A5A">302 → /dashboard (session set)</text>
+          <circle cx="320" cy="110" r="4" fill="#3A6A5A"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="controls">
+      <button class="btn-ctrl" id="btn-prev" onclick="prevStep()">← Prev</button>
+      <button class="btn-ctrl primary" id="btn-next" onclick="nextStep()">Next →</button>
+      <button class="btn-ctrl" id="btn-play" onclick="togglePlay()">▶ Play</button>
+      <button class="btn-ctrl" id="btn-reset" onclick="resetSteps()">↺ Reset</button>
+      <span class="step-counter" id="step-counter">Step 1 of 10</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
+
+  </div>
+
+  <div class="info-panel">
+    <div>
+      <div class="step-badge" id="info-badge">Step 1</div>
+      <div class="step-title" id="info-title">Access Attempt</div>
+      <div class="step-desc" id="info-desc">The user navigates to a protected resource on the Service Provider (SP) — for example, a SaaS application like Salesforce or an internal dashboard. The SP checks for an existing authenticated session.</div>
+      <div class="step-tech">
+        <div class="tech-label">Technical Detail</div>
+        <div class="tech-value" id="info-tech">HTTP GET /dashboard<br>No session cookie present</div>
+      </div>
+      <div class="security-note">
+        <div class="sec-label">Security Note</div>
+        <div class="sec-text" id="info-sec">The SP must never grant access before completing the full SAML flow. Session fixation attacks can occur if session tokens are reused across authentication state.</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-items">
+        <div class="legend-item"><div class="legend-line req"></div><span>Request / forward</span></div>
+        <div class="legend-item"><div class="legend-line resp"></div><span>Response / grant</span></div>
+        <div class="legend-line redir" style="width:28px;height:0;border-top:2px dashed #8A6A2A;margin-right:0"></div><span style="font-size:12px;color:var(--ink-dim);margin-left:10px;">Redirect (302)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  {
+    badge: "Step 1 of 10",
+    title: "Access Attempt",
+    desc: "The user navigates to a protected resource on the Service Provider (SP) — for example, a SaaS application like Salesforce or an internal tool. The SP intercepts the request and checks for an authenticated session.",
+    tech: "HTTP GET /dashboard\nCookie: (none or expired session)",
+    sec: "The SP must check for a valid, unexpired session before processing the request. Session tokens must be cryptographically random and bound to the authenticated identity.",
+    actors: ["browser"],
+    show: ["step-1"], hide: []
+  },
+  {
+    badge: "Step 2 of 10",
+    title: "Session Check — No Session Found",
+    desc: "The SP determines no valid session exists for this user. Rather than returning a 401, the SP initiates the SAML authentication flow to redirect the user to the Identity Provider (IdP).",
+    tech: "Session lookup: MISS\nSP initiates SP-initiated SSO flow\nSP records RelayState = /dashboard",
+    sec: "The SP must store the original requested URL (RelayState) to redirect the user back after authentication. RelayState must be validated to prevent open redirect attacks.",
+    actors: ["sp"],
+    show: ["step-2"], hide: []
+  },
+  {
+    badge: "Step 3 of 10",
+    title: "SP Generates AuthnRequest",
+    desc: "The SP constructs a SAML 2.0 AuthnRequest — an XML document that specifies who is asking for authentication, what the SP expects from the IdP, and where to send the response. The SP signs the AuthnRequest with its private key.",
+    tech: "<samlp:AuthnRequest\n  ID='_abc123'\n  Version='2.0'\n  IssuerFormat='entity'\n  AssertionConsumerServiceURL=\n    'https://sp.example.com/acs'\n  Destination='https://idp.example.com/sso'>",
+    sec: "The AuthnRequest ID must be unique per request to prevent replay attacks. The SP should require signed requests (WantAuthnRequestsSigned). The destination must match the IdP's registered SSO endpoint.",
+    actors: ["sp"],
+    show: ["step-3"], hide: []
+  },
+  {
+    badge: "Step 4 of 10",
+    title: "SP Redirects to IdP",
+    desc: "The SP returns a 302 redirect to the browser, pointing to the IdP's SSO endpoint. The AuthnRequest is Base64-encoded and URL-encoded as a query parameter. The RelayState is included so the IdP can return it with the response.",
+    tech: "HTTP 302 → https://idp.example.com/sso\n  ?SAMLRequest=<base64(deflate(XML))>\n  &RelayState=<encoded_return_url>\n  &SigAlg=RSA-SHA256\n  &Signature=<SP_signature>",
+    sec: "The redirect binding transmits the AuthnRequest in the URL. The SP must sign the request using RSA-SHA256 or stronger. SigAlg=RSA-SHA1 is deprecated and must not be used.",
+    actors: ["browser", "sp"],
+    show: ["step-4"], hide: []
+  },
+  {
+    badge: "Step 5 of 10",
+    title: "Browser Forwards Request to IdP",
+    desc: "The browser follows the 302 redirect and sends a GET request to the IdP's SSO URL, carrying the AuthnRequest and RelayState as query parameters. The IdP receives and parses the AuthnRequest.",
+    tech: "GET https://idp.example.com/sso\n  ?SAMLRequest=...\n  &RelayState=...\nIdP decodes, inflates, and validates\nthe AuthnRequest XML and SP signature.",
+    sec: "The IdP must validate the AuthnRequest signature against the SP's registered public certificate. The IdP should reject AuthnRequests from unknown or unregistered SPs (EntityID validation).",
+    actors: ["browser", "idp"],
+    show: ["step-5"], hide: []
+  },
+  {
+    badge: "Step 6 of 10",
+    title: "IdP Presents Login Form",
+    desc: "The IdP determines the user is not yet authenticated and presents a login form. For enterprise deployments, this typically includes MFA — a TOTP code, push notification, or hardware key challenge in addition to username and password.",
+    tech: "HTTP 200 — Login form\nContent: username + password fields\n+ MFA challenge (TOTP / push / FIDO2)\nSessionIndex not yet issued.",
+    sec: "MFA is a critical control at this step. The IdP should enforce MFA for all SSO-authenticated sessions. Phishing-resistant MFA (FIDO2/WebAuthn) is preferred over SMS or TOTP for high-assurance contexts.",
+    actors: ["browser", "idp"],
+    show: ["step-6"], hide: []
+  },
+  {
+    badge: "Step 7 of 10",
+    title: "User Authenticates",
+    desc: "The user submits credentials and MFA token. The IdP validates the credentials against its user store (LDAP, Active Directory, or its own identity store), verifies the MFA factor, and if successful, prepares the SAML Assertion.",
+    tech: "POST https://idp.example.com/sso\n  username=jsmith@example.com\n  password=<credential>\n  mfa_token=<TOTP or push>\nIdP signs SAML Assertion with IdP private key.",
+    sec: "Credentials must be transmitted over TLS only. The IdP should implement brute-force protection (lockout or rate limiting). The SAML Assertion must be signed with the IdP's private key — the SP validates against the IdP's public certificate.",
+    actors: ["browser", "idp"],
+    show: ["step-7"], hide: []
+  },
+  {
+    badge: "Step 8 of 10",
+    title: "IdP Returns SAML Response",
+    desc: "The IdP constructs a SAML Response containing the signed Assertion. The Assertion includes the user's identity (NameID), attributes (email, role, groups), conditions (validity window), and the ACS URL. The IdP sends this back to the browser as an auto-submitting HTML form.",
+    tech: "<samlp:Response\n  InResponseTo='_abc123'\n  Destination='https://sp.example.com/acs'>\n  <saml:Assertion>\n    <saml:Conditions\n      NotBefore='2026-07-01T10:00:00Z'\n      NotOnOrAfter='2026-07-01T10:05:00Z'/>\n    <saml:AttributeStatement>\n      email, groups, role...\n    </saml:AttributeStatement>\n  </saml:Assertion>\n</samlp:Response>",
+    sec: "The Assertion validity window (NotBefore/NotOnOrAfter) should be tight — typically 5 minutes — to limit replay attack windows. The response must be encrypted if it contains sensitive attributes (EncryptedAssertion). SP must validate InResponseTo against the original AuthnRequest ID.",
+    actors: ["browser", "idp"],
+    show: ["step-8"], hide: []
+  },
+  {
+    badge: "Step 9 of 10",
+    title: "Browser POSTs SAMLResponse to SP ACS",
+    desc: "The IdP's HTML page auto-submits a POST form to the SP's Assertion Consumer Service (ACS) URL, carrying the Base64-encoded SAMLResponse. The browser performs this POST transparently — the user sees only a brief redirect.",
+    tech: "POST https://sp.example.com/acs\n  SAMLResponse=<base64(XML)>\n  RelayState=<return_url>\nContent-Type: application/x-www-form-urlencoded",
+    sec: "The POST binding keeps the SAMLResponse out of server logs and browser history (unlike redirect binding). The ACS URL must match exactly what the SP registered with the IdP — URL mismatch is a common misconfiguration that enables open redirect attacks.",
+    actors: ["browser", "sp"],
+    show: ["step-9"], hide: [],
+    ext: true
+  },
+  {
+    badge: "Step 10 of 10",
+    title: "SP Validates & Grants Access",
+    desc: "The SP decodes and validates the SAMLResponse: verifies the IdP signature, checks the Assertion conditions (validity window, audience restriction), validates InResponseTo, and extracts the user's identity and attributes. On success, the SP creates a session and redirects the user to the originally requested resource.",
+    tech: "SP validates:\n1. IdP signature (against IdP cert)\n2. NotBefore / NotOnOrAfter\n3. AudienceRestriction == SP EntityID\n4. InResponseTo == original AuthnRequest ID\n5. AssertionConsumerServiceURL match\n→ Create session, set cookie\n→ 302 /dashboard",
+    sec: "The SP must validate all five conditions above — skipping any one creates a vulnerability. AudienceRestriction prevents Assertion theft across SPs. InResponseTo prevents replay attacks. The SP must also check for duplicate Assertion IDs within the validity window.",
+    actors: ["browser", "sp"],
+    show: ["step-10"], hide: [],
+    ext: true
+  }
+];
+
+let current = 0;
+let playing = false;
+let playTimer = null;
+
+function showStep(index) {
+  const step = STEPS[index];
+
+  // Update info panel
+  document.getElementById("info-badge").textContent = step.badge;
+  document.getElementById("info-title").textContent = step.title;
+  document.getElementById("info-desc").textContent = step.desc;
+  document.getElementById("info-tech").textContent = step.tech;
+  document.getElementById("info-sec").textContent = step.sec;
+  document.getElementById("step-counter").textContent = step.badge;
+  document.getElementById("progress-fill").style.width = ((index + 1) / STEPS.length * 100) + "%";
+
+  // Highlight actors
+  document.querySelectorAll(".actor-box").forEach(b => b.classList.remove("active-actor"));
+  (step.actors || []).forEach(a => {
+    const el = document.getElementById("actor-" + a);
+    if (el) el.classList.add("active-actor");
+  });
+
+  // Show extended SVG if needed
+  const hasExt = STEPS.slice(0, index + 1).some(s => s.ext);
+  document.getElementById("flow-svg-2").style.display = hasExt ? "block" : "none";
+
+  // Show all steps up to and including current
+  for (let i = 0; i < STEPS.length; i++) {
+    const s = STEPS[i];
+    (s.show || []).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute("opacity", i <= index ? "1" : "0");
+    });
+  }
+}
+
+function nextStep() {
+  if (current < STEPS.length - 1) {
+    current++;
+    showStep(current);
+  } else if (playing) {
+    stopPlay();
+  }
+}
+
+function prevStep() {
+  if (current > 0) {
+    current--;
+    showStep(current);
+  }
+}
+
+function resetSteps() {
+  stopPlay();
+  current = 0;
+  showStep(0);
+}
+
+function togglePlay() {
+  if (playing) { stopPlay(); }
+  else { startPlay(); }
+}
+
+function startPlay() {
+  playing = true;
+  document.getElementById("btn-play").textContent = "⏸ Pause";
+  playTimer = setInterval(() => {
+    if (current < STEPS.length - 1) { current++; showStep(current); }
+    else { stopPlay(); }
+  }, 2800);
+}
+
+function stopPlay() {
+  playing = false;
+  document.getElementById("btn-play").textContent = "▶ Play";
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") nextStep();
+  if (e.key === "ArrowLeft")  prevStep();
+  if (e.key === " ") { e.preventDefault(); togglePlay(); }
+});
+
+showStep(0);
+</script>
+</body>
+</html>
